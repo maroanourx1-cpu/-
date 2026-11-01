@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>توكتوك شعبولا – TokTok Sha3bola</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛺</text></svg>" />
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <!-- شاشة التحميل -->
+  <div id="loading" class="screen">
+    <div class="logo-big">توكتوك شعبولا<small>TokTok Sha3bola</small></div>
+    <div id="loadmsg">جاري التحميل…</div>
+    <div class="bar"><i id="loadbar"></i></div>
+  </div>
+
+  <!-- الواجهة أثناء اللعب -->
+  <div id="hud" class="hidden">
+    <div class="card tl" id="shiftBox"><span class="lbl">إجمالي الوردية</span><span><b id="shiftVal">0</b> <small>ج.م</small></span></div>
+    <div class="card tl2" id="missionBox"><div id="missionTitle">ابحث عن زبون</div><div id="missionSub"></div></div>
+    <div class="card tr" id="bankBox"><span class="lbl">رصيدك</span><span><b id="bankVal">0</b> <small>ج.م</small></span></div>
+    <div id="minimapWrap">
+      <canvas id="minimap" width="360" height="360"></canvas>
+      <div id="north">ش</div>
+    </div>
+    <div id="mapBtns">
+      <button id="btnMap" class="chip">الخريطة <kbd>M</kbd></button>
+      <button id="btnCam" class="chip">الكاميرا <kbd>V</kbd></button>
+      <button id="btnGarage" class="chip">الجراج <kbd>G</kbd></button>
+    </div>
+    <div class="card bl" id="radio">
+      <div class="radio-ico">📻</div>
+      <div><div id="radioStation">شعبولا إف إم ٩٨٫٧</div><div id="radioTrack" class="sub">بيت عربي – توليد مباشر</div></div>
+    </div>
+    <div id="speedo">
+      <div class="speedrow"><b id="spd">0</b><span class="unit">كم/س</span></div>
+      <div class="gauges">
+        <div class="g"><span class="gl">نيترو <kbd>Shift</kbd></span><div class="track nitro"><i id="nitroBar"></i></div></div>
+        <div class="g"><span class="gl">بنزين</span><div class="track fuel"><i id="fuelBar"></i></div></div>
+      </div>
+      <div class="trips">الرحلات: <b id="tripsVal">0</b></div>
+    </div>
+    <div id="prompt" class="hidden"></div>
+    <div id="bubble" class="hidden"></div>
+    <div id="toasts"></div>
+    <div id="boostFx"></div>
+    <div id="dbg"></div>
+    <div id="keys">W/A/S/D قيادة · Space فرامل اليد · H كلاكس · E تفاعل · V كاميرا · Shift نيترو · G جراج · M خريطة · R إرجاع للطريق · X إلغاء الرحلة · Esc إيقاف</div>
+  </div>
+
+  <!-- القائمة الرئيسية -->
+  <div id="mainMenu" class="screen hidden">
+    <div class="logo-big">توكتوك شعبولا<small>TokTok Sha3bola · BETA</small></div>
+    <div class="menu">
+      <button id="mmContinue" class="btn primary">متابعة اللعب</button>
+      <button id="mmNew" class="btn">لعبة جديدة</button>
+      <button id="mmGarage" class="btn">الجراج</button>
+      <button id="mmSettings" class="btn">الإعدادات</button>
+    </div>
+    <div id="mapSource" class="note"></div>
+    <div class="note">قيادة توكتوك في شوارع عين شمس الشرقية · وصّل الزباين، اكسب فلوس، طوّر التوكتوك</div>
+  </div>
+
+  <!-- قائمة الإيقاف -->
+  <div id="pauseMenu" class="screen hidden">
+    <div class="panel narrow">
+      <h2>اللعبة واقفة</h2>
+      <button id="pmResume" class="btn primary">كمّل اللعب</button>
+      <button id="pmGarage" class="btn">الجراج</button>
+      <button id="pmMap" class="btn">خريطة المدينة</button>
+      <button id="pmSettings" class="btn">الإعدادات</button>
+      <button id="pmQuit" class="btn danger">حفظ والخروج للقائمة</button>
+    </div>
+  </div>
+
+  <!-- الجراج -->
+  <div id="garage" class="hidden">
+    <div class="garage-panel">
+      <div class="garage-head">
+        <h2>الجراج</h2>
+        <div class="card" id="gMoney"><span class="lbl">رصيدك</span><b id="gMoneyVal">0</b> <small>ج.م</small></div>
+      </div>
+      <div class="tabs" id="gTabs">
+        <button data-tab="colors" class="tab on">الألوان</button>
+        <button data-tab="extras" class="tab">إضافات وزينة</button>
+        <button data-tab="upgrades" class="tab">تطوير</button>
+        <button data-tab="fuel" class="tab">بنزين</button>
+      </div>
+      <div id="garageBody"></div>
+      <button id="gClose" class="btn primary">خروج من الجراج</button>
+    </div>
+    <div class="garage-hint">اسحب بالماوس لتدوير التوكتوك</div>
+  </div>
+
+  <!-- الإعدادات -->
+  <div id="settings" class="screen hidden">
+    <div class="panel">
+      <h2>الإعدادات</h2>
+      <div class="row"><label>الصوت العام</label><input type="range" id="sMaster" min="0" max="1" step="0.05" /></div>
+      <div class="row"><label>المؤثرات</label><input type="range" id="sSfx" min="0" max="1" step="0.05" /></div>
+      <div class="row"><label>صوت المحرك</label><input type="range" id="sEngine" min="0" max="1" step="0.05" /></div>
+      <div class="row"><label>أصوات المدينة</label><input type="range" id="sAmbient" min="0" max="1" step="0.05" /></div>
+      <div class="row"><label>الراديو</label><input type="range" id="sMusic" min="0" max="1" step="0.05" /></div>
+      <div class="row"><label>جودة الرسومات</label>
+        <select id="sQuality"><option value="low">منخفضة</option><option value="medium">متوسطة</option><option value="high">عالية</option></select></div>
+      <div class="row"><label>حساسية الكاميرا</label><input type="range" id="sSens" min="0.3" max="2.5" step="0.1" /></div>
+      <div class="row"><label>إظهار FPS</label><input type="checkbox" id="sFps" /></div>
+      <div class="btns">
+        <button id="sBack" class="btn primary">رجوع</button>
+        <button id="sReset" class="btn danger">مسح التقدم</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- خريطة المدينة -->
+  <div id="mapOverlay" class="screen hidden">
+    <div class="panel wide">
+      <h2>خريطة عين شمس الشرقية</h2>
+      <canvas id="bigmap" width="900" height="640"></canvas>
+      <div class="legend"><span><i style="background:#ffc400"></i> زبون</span><span><i style="background:#ff3b30"></i> الوجهة</span><span><i style="background:#00ff88"></i> أنت</span><span><i style="background:#00e5ff"></i> المسار</span></div>
+      <button id="mapClose" class="btn primary">إغلاق <kbd>M</kbd></button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

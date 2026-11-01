@@ -1,0 +1,25 @@
+{
+  "name": "toktok-sha3bola",
+  "version": "0.1.0-beta",
+  "private": true,
+  "type": "module",
+  "description": "توكتوك شعبولا – لعبة قيادة توكتوك ثلاثية الأبعاد في المتصفح (عين شمس الشرقية)",
+  "scripts": {
+    "dev": "vite --open",
+    "dev:lan": "vite --host --open",
+    "build": "vite build",
+    "preview": "vite preview --open",
+    "fetch-map": "node scripts/fetch-osm.mjs",
+    "start": "vite --open"
+  },
+  "dependencies": {
+    "@fontsource/cairo": "^5.1.0",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
